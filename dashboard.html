@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Emergency Dashboard</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background-color: #f7f7f7;
+    }
+    h2 {
+      color: #d32f2f;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      background: white;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    th, td {
+      padding: 12px;
+      border: 1px solid #ddd;
+      text-align: center;
+    }
+    th {
+      background-color: #d32f2f;
+      color: white;
+    }
+    tr:nth-child(even) {
+      background-color: #f1f1f1;
+    }
+    a {
+      display: inline-block;
+      margin-bottom: 15px;
+      color: white;
+      background: #1976d2;
+      padding: 10px 15px;
+      text-decoration: none;
+      border-radius: 5px;
+    }
+    button {
+      background-color: #d32f2f;
+      color: white;
+      padding: 8px 14px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+<body>
+
+<h2>Emergency Reports Dashboard</h2>
+<a href="index.html">← Back to Home</a>
+<br>
+<button onclick="clearReports()">Clear All Reports</button>
+
+<table id="reportTable">
+  <tr>
+    <th>Type</th>
+    <th>Location</th>
+    <th>Description</th>
+    <th>Priority</th>
+    <th>Time</th>
+  </tr>
+</table>
+
+<script>
+  const reports = JSON.parse(localStorage.getItem("emergencyReports")) || [];
+  const table = document.getElementById("reportTable");
+
+  reports.forEach(report => {
+    const row = table.insertRow();
+    const priorityColor = report.priority === "High" ? "#ffcccc" :
+                          report.priority === "Medium" ? "#fff3cd" : "#d4edda";
+
+    row.innerHTML = `
+      <td>${report.type}</td>
+      <td>${report.location}</td>
+      <td>${report.desc}</td>
+      <td style="background-color:${priorityColor};">${report.priority}</td>
+      <td>${report.time}</td>
+    `;
+  });
+
+  function clearReports() {
+    if (confirm("Are you sure you want to delete all reports?")) {
+      localStorage.removeItem("emergencyReports");
+      location.reload();
+    }
+  }
+</script>
+
+</body>
+</html>

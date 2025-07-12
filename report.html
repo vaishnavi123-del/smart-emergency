@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Report Emergency</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #fafafa;
+      padding: 20px;
+    }
+    .form-box {
+      background: white;
+      max-width: 600px;
+      margin: auto;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+    h2 {
+      color: #1976d2;
+    }
+    label, input, select, textarea {
+      display: block;
+      width: 100%;
+      margin-top: 10px;
+    }
+    button {
+      margin-top: 20px;
+      padding: 10px;
+      background-color: #1976d2;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    #map {
+      height: 300px;
+      width: 100%;
+      margin-top: 20px;
+      border-radius: 10px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="form-box">
+  <h2>Report an Emergency</h2>
+
+  <form>
+    <label for="type">Type of Emergency:</label>
+    <select id="type">
+      <option>Fire</option>
+      <option>Medical</option>
+      <option>Crime</option>
+      <option>Other</option>
+    </select>
+
+    <label for="location">Location:</label>
+    <input type="text" id="location" placeholder="Click on the map below">
+
+    <label for="desc">Description:</label>
+    <textarea id="desc" placeholder="What happened? Fire/Medical/Crime/Others" rows="4"></textarea>
+
+    <label for="priority">Priority Level:</label>
+    <select id="priority">
+      <option value="Low">Low</option>
+      <option value="Medium">Medium</option>
+      <option value="High">High</option>
+    </select>
+
+    <button type="button" onclick="submitReport()">Submit</button>
+  </form>
+
+  <h3>📍 Select Location on Map:</h3>
+  <div id="map"></div>
+</div>
+
+<script>
+  function submitReport() {
+    const type = document.getElementById("type").value;
+    const location = document.getElementById("location").value;
+    const desc = document.getElementById("desc").value;
+    const priority = document.getElementById("priority").value;
+
+    if (!type || !location || !desc || !priority) {
+      alert("Please fill all fields.");
+      return;
+    }
+
+    const report = {
+      type,
+      location,
+      desc,
+      priority,
+      time: new Date().toLocaleString()
+    };
+
+    let reports = JSON.parse(localStorage.getItem("emergencyReports")) || [];
+    reports.push(report);
+    localStorage.setItem("emergencyReports", JSON.stringify(reports));
+
+    let vehicle = "";
+    if (type === "Fire") vehicle = "🚒 Fire Truck dispatched!";
+    else if (type === "Medical") vehicle = "🚑 Ambulance on the way!";
+    else if (type === "Crime") vehicle = "🚓 Police unit dispatched!";
+    else if(type==="Others")vehicle="Help being sent!";
+    else vehicle = "🚨 Emergency team alerted!";
+
+    alert(vehicle);
+    window.location.href = "dashboard.html";
+  }
+</script>
+
+<!-- Google Maps API (no key needed for basic use) -->
+<script src="https://maps.googleapis.com/maps/api/js?callback=initMap" async defer></script>
+<script>
+  function initMap() {
+    const defaultCenter = { lat: 12.9716, lng: 77.5946 }; // Bangalore
+    const map = new google.maps.Map(document.getElementById("map"), {
+      zoom: 12,
+      center: defaultCenter,
+    });
+
+    let marker;
+
+    map.addListener("click", function (event) {
+      const lat = event.latLng.lat();
+      const lng = event.latLng.lng();
+      const locationInput = document.getElementById("location");
+      locationInput.value = `Lat: ${lat.toFixed(4)}, Lng: ${lng.toFixed(4)}`;
+
+      if (marker) marker.setMap(null);
+
+      marker = new google.maps.Marker({
+        position: event.latLng,
+        map: map,
+      });
+    });
+  }
+</script>
+
+</body>
+</html>
